@@ -23,7 +23,9 @@ env:
   LLVM_MINGW_TAG: "20261006"
   LLVM_MINGW: llvm-mingw-20261006-ucrt-macos-universal
   LLVM_MINGW_SHA256: a7a19b11048e89372637d26279cdb7c430ed3cf8c1e224310421312bf986ebf6
-  TARGETS: dlls/winecoreaudio.drv/winecoreaudio.so dlls/dsound/i386-windows/dsound.dll
+  TARGETS: >-
+    dlls/winecoreaudio.drv/winecoreaudio.so dlls/winemac.drv/winemac.so
+    dlls/dsound/i386-windows/dsound.dll dlls/wininet/i386-windows/wininet.dll
 
 jobs:
   build:
@@ -70,7 +72,7 @@ jobs:
       - name: Build patched
         run: |
           export PATH="$PATH:$RUNNER_TEMP/$LLVM_MINGW/bin"
-          git -C wine apply --verbose "$GITHUB_WORKSPACE"/patches/*.patch
+          for p in "$GITHUB_WORKSPACE"/patches/*.patch; do git -C wine apply --verbose "$p"; done
           make -C build -j"$(sysctl -n hw.ncpu)" $TARGETS
           for t in $TARGETS; do mkdir -p "out/patched/$(dirname "$t")"; cp "build/$t" "out/patched/$t"; done
       # The bundle ships its PE files stripped with llvm-strip --strip-all
@@ -90,7 +92,7 @@ jobs:
             echo "llvm-mingw: $LLVM_MINGW"
             echo "sdk: $(xcrun --show-sdk-version), MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET"
             (cd out && shasum -a 256 $(find . -type f | sort))
-            for f in out/*/dlls/winecoreaudio.drv/winecoreaudio.so; do otool -L "$f"; done
+            for f in out/*/dlls/*/*.so; do otool -L "$f"; done
           } | tee out/BUILD-INFO.txt
       - uses: actions/upload-artifact@v4
         with:
