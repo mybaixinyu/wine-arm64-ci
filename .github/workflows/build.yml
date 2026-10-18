@@ -9,7 +9,7 @@ on:
     inputs:
       wine_ref:
         description: athei/wine full commit SHA the bundle was built from (wine --version names it)
-        default: e2e42653b41e48fc7a6ed00569d3aaea9719ed5b
+        default: d57b522eea5578ea7dcedd2b71bcba3657749e5e
         type: string
 
 permissions:

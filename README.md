@@ -2,7 +2,7 @@
 
 Rebuilds single modules of the native arm64 Wine from
 [athei/wine-build](https://github.com/athei/wine-build) (release
-`arm64-11.19-1`, built from `athei/wine@e2e42653b41`) with the patches in
+`arm64-11.19-2`, built from `athei/wine@d57b522eea5`) with the patches in
 `patches/`, to replace the same files in an installed bundle.
 
 ## Patches
@@ -27,6 +27,13 @@ screen's top-left corner. It now goes to a fixed point of the window, by
 default 70,205 points from the content's bottom-left, just below WoW's chat edit
 box. The Mac driver option `IMEFallbackPosition` takes `x,y` to move it, or
 `N` to turn it off.
+
+`0008-winemac-leave-the-presentation-options-alone-while-inactive` is not
+WoWSilicon's either: athei/wine hides the Dock and menu bar through the
+presentation options while a window covers the screen, and sets them back
+as the application resigns active. The window server then makes the game
+the front process again, so Command-Tab out of a fullscreen game often bounced
+back. macOS restores both for the next application by itself.
 
 Not carried, since this Wine has no use for them or already has them:
 `0001` (fixes WineAndAqua's DXMT glue, which this tree does not have),
