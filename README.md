@@ -7,7 +7,7 @@ Rebuilds single modules of the native arm64 Wine from
 
 ## Patches
 
-All come from [WoWSilicon/WoWSilicon](https://github.com/WoWSilicon/WoWSilicon)
+`0001`–`0006` come from [WoWSilicon/WoWSilicon](https://github.com/WoWSilicon/WoWSilicon)
 (`Packaging/WineRuntime/patches/`, its Wine 11.13 runtime), rebased onto
 `athei/wine@e2e42653b41`. They apply in order.
 
@@ -19,6 +19,14 @@ All come from [WoWSilicon/WoWSilicon](https://github.com/WoWSilicon/WoWSilicon)
 | `0004-wowsilicon-winemac-ignore-momentum-scroll-events` | `0011` | Trackpad momentum scrolling no longer sends wheel events, and continuous scrolling is quantized into wheel clicks |
 | `0005-wowsilicon-winemac-add-gcmouse-raw-input` | `0012` | Raw mouse movement from GameController's GCMouse; the Mac driver option `UseGCMouse=N` turns it off |
 | `0006-wowsilicon-winemac-normalize-toplevel-client-surface-origin` | `0004` | A top-level window's client surface view starts at its own origin |
+
+`0007-winemac-place-the-input-method-window-for-programs-that-never-do` is not
+WoWSilicon's: a program that draws its own caret and never calls
+`ImmSetCompositionWindow` (WoW) left the macOS input method window at the
+screen's top-left corner. It now goes to a fixed point of the window, by
+default 40,90 points from the content's bottom-left, next to WoW's chat edit
+box. The Mac driver option `IMEFallbackPosition` takes `x,y` to move it, or
+`N` to turn it off.
 
 Not carried, since this Wine has no use for them or already has them:
 `0001` (fixes WineAndAqua's DXMT glue, which this tree does not have),
