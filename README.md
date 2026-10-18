@@ -24,7 +24,7 @@ Rebuilds single modules of the native arm64 Wine from
 WoWSilicon's: a program that draws its own caret and never calls
 `ImmSetCompositionWindow` (WoW) left the macOS input method window at the
 screen's top-left corner. It now goes to a fixed point of the window, by
-default 40,90 points from the content's bottom-left, next to WoW's chat edit
+default 70,205 points from the content's bottom-left, just below WoW's chat edit
 box. The Mac driver option `IMEFallbackPosition` takes `x,y` to move it, or
 `N` to turn it off.
 
