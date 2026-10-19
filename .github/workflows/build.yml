@@ -75,6 +75,15 @@ jobs:
           for p in "$GITHUB_WORKSPACE"/patches/*.patch; do git -C wine apply --verbose "$p"; done
           make -C build -j"$(sysctl -n hw.ncpu)" $TARGETS
           for t in $TARGETS; do mkdir -p "out/patched/$(dirname "$t")"; cp "build/$t" "out/patched/$t"; done
+      # Programs that reproduce a behaviour a patch is about, to run under the
+      # bundle on a Mac.
+      - name: Build the test programs
+        run: |
+          mkdir -p out/tests
+          for arch in i686 x86_64; do
+            "$RUNNER_TEMP/$LLVM_MINGW/bin/$arch-w64-mingw32-clang" -O2 -mwindows \
+              tests/minimize-on-deactivate.c -o "out/tests/minimize-on-deactivate-$arch.exe"
+          done
       # The bundle ships its PE files stripped with llvm-strip --strip-all
       # (strip_pe in bundle-wine.sh), which keeps Wine's builtin marker.
       - name: Strip PE files

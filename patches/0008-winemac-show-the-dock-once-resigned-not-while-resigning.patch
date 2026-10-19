@@ -1,0 +1,32 @@
+diff --git a/dlls/winemac.drv/cocoa_app.m b/dlls/winemac.drv/cocoa_app.m
+index f005409..0b5e493 100644
+--- a/dlls/winemac.drv/cocoa_app.m
++++ b/dlls/winemac.drv/cocoa_app.m
+@@ -718,6 +718,8 @@ - (void) updateFullscreenPresentation:(BOOL)active
+ 
+         /* AppKit owns the options of a window in native fullscreen. */
+         if (current & NSApplicationPresentationFullScreen) return;
++        /* Set while the application resigns, the options bring it back to the front; applicationDidResignActive shows the Dock instead. */
++        if (!active) return;
+ 
+         if (active && ![self areDisplaysCaptured])
+         {
+@@ -740,7 +742,9 @@ - (void) updateFullscreenPresentation:(BOOL)active
+        the presentation options, which would leave a window Windows considers
+        minimized on the screen with nothing to restore it from.  Show the Dock
+        and menu bar first; the next level pass hides them again if a window
+-       still covers the screen. */
++       still covers the screen.  An inactive application must have shown them
++       when it resigned (applicationDidResignActive): setting them once it is
++       inactive does not bring the -miniaturize: back. */
+     - (void) prepareToMiniaturize
+     {
+         if ([NSApp presentationOptions] == (NSApplicationPresentationHideDock | NSApplicationPresentationHideMenuBar))
+@@ -2431,6 +2435,7 @@ - (void)applicationDidResignActive:(NSNotification *)notification
+             [self postAppDeactivated];
+ 
+         [self releaseMouseCapture];
++        [self prepareToMiniaturize];
+     }
+ 
+     - (void) applicationDidUnhide:(NSNotification*)aNotification
