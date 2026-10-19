@@ -28,17 +28,22 @@ default 70,205 points from the content's bottom-left, just below WoW's chat edit
 box. The Mac driver option `IMEFallbackPosition` takes `x,y` to move it, or
 `N` to turn it off.
 
-`0008-winemac-show-the-dock-once-resigned-not-while-resigning` is not
+`0008-winemac-leave-the-presentation-options-alone-while-inactive` is not
 WoWSilicon's either: athei/wine hides the Dock and menu bar through the
-presentation options while a window covers the screen, and set them back
-from applicationWillResignActive. The window server then made the game the
-front process again (`[SetMenuBars]` in its log), so Command-Tab out of a
-fullscreen game often bounced back. They are now set back from
-applicationDidResignActive. Not setting them back at all is not enough: a
-native probe shows AppKit ignores `-miniaturize:` while an inactive
-application still has them, and setting them once it is inactive does not
-undo that, so a game that minimizes itself when it loses the focus would
-stay on the screen. `tests/minimize-on-deactivate.c` is such a program.
+presentation options while a window covers the screen, and sets them back
+as the application resigns active. The window server then makes the game
+the front process again, so Command-Tab out of a fullscreen game often bounced
+back. macOS restores both for the next application by itself.
+
+`tests/minimize-on-deactivate.c` minimizes its screen-covering window when it
+loses the activation, as Source games do, which athei/wine's comment on the
+presentation options is about: AppKit ignores `-miniaturize:` while they hide
+the Dock. Under this Wine with `0008` the menu bar was hidden while it was
+active, and after switching to Finder its window left the screen and Finder
+stayed in front, so `prepareToMiniaturize`, which still sets the options back
+for an inactive application, neither blocks the minimize nor takes the front
+back. (A native AppKit probe does lose `-miniaturize:` in that state; Wine's
+`miniaturizeForWin32` does not.)
 
 Not carried, since this Wine has no use for them or already has them:
 `0001` (fixes WineAndAqua's DXMT glue, which this tree does not have),
